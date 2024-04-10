@@ -49,8 +49,11 @@ async function loadAssets() {
   if (onLoaded) {
     onLoaded();
   } else {
-    document.querySelector('#preloader').remove();
-    msg.emit("preloader/closed");
+    setTimeout(() => {
+      document.querySelector('#preloader').remove();
+      console.log("EMIT CLOSED!")
+      msg.emit("preloader/closed");
+    }, 1);
   }
 
   return bundle["sprites/sprites.json"];

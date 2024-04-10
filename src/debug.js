@@ -8,10 +8,6 @@ let _debugPane = null;
 export const isDebugOn = import.meta.env.DEV;
 
 export function initDebug(app) {
-    if (import.meta.env.PROD) {
-        return;
-    }
-
     createDebugPane();
 
     const global = globalThis;
@@ -42,7 +38,8 @@ function createDebugPane() {
     const pane = new Pane({title: "Debug pane"});
     pane.hidden = true;
 
-    msg.on("preloader/closed", () => pane.hidden = false);
+    console.log("SETUP CLOSE HANDLER")
+    msg.once("preloader/closed", () => console.log("UNHIDE PANE") || (pane.hidden = false));
 
     pane.addBinding(PIXI.Ticker.shared, 'FPS', {
         readonly: true,

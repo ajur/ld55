@@ -4,11 +4,13 @@ import './style.css'
 import { Application, Sprite, AnimatedSprite } from 'pixi.js';
 
 import preloader from './preloader.js';
-import { initDebug } from './debug';
+import { initDebug, isDebugOn } from './debug';
 
-// preloader.show();
+if (!isDebugOn) {
+  preloader.show();
+}
 
-async function init() {
+(async () => {
   const app = new Application();
   await app.init({ background: '#47ABA9', resizeTo: window });
 
@@ -17,16 +19,15 @@ async function init() {
 
   const assets = await preloader.loadAssets();
 
-  initDebug(app);
+  if (isDebugOn) {
+    initDebug(app);
+  }
   
 
   renderScene(app, assets);
   
 
-}
-
-init();
-
+})();
 
 function renderScene(app, assets) {
   const foamFrameKeys = assets._frameKeys.filter(k => k.startsWith('water/foam')).sort()
