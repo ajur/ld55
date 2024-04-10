@@ -38,7 +38,7 @@ function show() {
 }
 
 async function loadAssets() {
-  const manifestFile = await fetch('/assets/manifest.json');
+  const manifestFile = await fetch(import.meta.env.BASE_URL + '/assets/manifest.json');
   const manifest = await manifestFile.json();
 
   await Assets.init({ manifest, basePath: 'assets' });
