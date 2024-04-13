@@ -51,12 +51,9 @@ async function loadAssets() {
   } else {
     setTimeout(() => {
       document.querySelector('#preloader').remove();
-      console.log("EMIT CLOSED!")
       msg.emit("preloader/closed");
     }, 1);
   }
-
-  return bundle["sprites/sprites.json"];
 }
 
 export default {

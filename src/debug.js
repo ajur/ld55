@@ -20,6 +20,7 @@ export function initDebug(app) {
 
     console.log('- APP - like the whole game scene and stuff')
     global.APP = app;
+    global.__PIXI_APP__ = app;
     console.log('- PANE - tweakpane, until I replace it with something custom')
     global.PANE = _debugPane;
     
@@ -38,18 +39,15 @@ function createDebugPane() {
     const pane = new Pane({title: "Debug pane"});
     pane.hidden = true;
 
-    console.log("SETUP CLOSE HANDLER")
-    msg.once("preloader/closed", () => console.log("UNHIDE PANE") || (pane.hidden = false));
+    msg.once("preloader/closed", () => { pane.hidden = false; });
 
     pane.addBinding(PIXI.Ticker.shared, 'FPS', {
         readonly: true,
     });
-    pane.addBinding(PIXI.Ticker.shared, 'FPS', {
-        readonly: true,
-        view: 'graph',
-        min: 0,
-        max: 70,
-    });
+    // pane.addBinding(PIXI.Ticker.shared, 'FPS', {
+    //     readonly: true,
+    //     view: 'graph'
+    // });
 
     _debugPane = pane;
 }
