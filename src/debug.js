@@ -16,7 +16,7 @@ export function initDebug(app) {
     console.log('- PIXI - for some fun.. and dev tools')
     global.PIXI = PIXI;
     console.log('- gsap - wiggle wiggle')
-    global.gsap = gsap;
+    global.GSAP = gsap;
 
     console.log('- APP - like the whole game scene and stuff')
     global.APP = app;

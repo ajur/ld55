@@ -4,6 +4,7 @@ import { AlphaHitArea } from "./AlphaHitArea";
 import { GlowFilter, GlitchFilter } from "pixi-filters";
 
 import { shuffle } from "../tools"
+import gsap from "gsap";
 
 const _frameKeys = {};
 
