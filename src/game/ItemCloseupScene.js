@@ -1,7 +1,9 @@
 import { Container, Sprite } from "pixi.js";
+import { sound } from "@pixi/sound";
 import gsap from "gsap";
 import { Message } from "./Message";
 import { GlowFilter } from "pixi-filters";
+import { rand, randInt, randPick } from "../tools";
 
 export class ItemCloseupScene extends Container {
 
@@ -34,7 +36,7 @@ export class ItemCloseupScene extends Container {
     gsap.timeline({ onComplete: () => this.onItemDetailShown() }).add([
       gsap.to(this.gameScene.bkgBlur, { blur: 8 }),
       gsap.to(item.position, { x: 0, ease: 'power1.in' }),
-      gsap.to(item.position, { y: -150, ease: 'power1.out' }),
+      gsap.to(item.position, { y: -100, ease: 'power1.out' }),
       gsap.to(item.scale, { x: 2, y: 2, ease: 'power1.in' }),
       gsap.to(desc.scale, { x: 1, ease: 'back.out(0.5)' })
     ]).duration(0.4);
@@ -73,11 +75,17 @@ export class ItemCloseupScene extends Container {
   throwOut() {
     this.removeAllListeners();
 
-    gsap.timeline({ onComplete: () => { this.reset(); this.gameScene.onItemDismissed(); } }).add([
+    sound.play(`audio/throw${randInt(4)}.mp3`);
+    const throwSide = randPick(-1, 1);
+    gsap.timeline({ onComplete: () => { 
+      this.reset(); 
+      this.gameScene.onItemDismissed();
+      sound.play(`audio/drop${randInt(4)}.mp3`);
+    } }).add([
       gsap.to(this.gameScene.bkgBlur, { blur: 0 }),
-      gsap.to(this.item, { alpha: 0, rotation: -7 }),
-      gsap.to(this.item, { x: -500, ease: "power1.in" }),
-      gsap.to(this.item, { y: -300, ease: "power2.out" }),
+      gsap.to(this.item, { alpha: 0, rotation: throwSide * rand(2, 5) }),
+      gsap.to(this.item, { x: throwSide * 1000, ease: "power1.in" }),
+      gsap.to(this.item, { y: randInt(-400, -300), ease: "power1.out" }),
       gsap.to(this.desc.scale, { x: 0, ease: "back.in" })
     ]);
   }

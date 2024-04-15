@@ -3,8 +3,9 @@ import { Container, Sprite, Assets } from "pixi.js";
 import { AlphaHitArea } from "./AlphaHitArea";
 import { GlowFilter, GlitchFilter } from "pixi-filters";
 
-import { shuffle } from "../tools"
+import { randInt, randPick, shuffle } from "../tools"
 import gsap from "gsap";
+import { sound } from "@pixi/sound";
 
 const _frameKeys = {};
 
@@ -13,11 +14,11 @@ export function createRandomItem(type, hasGenie, onClick) {
     _frameKeys[type] = Assets.get('sprites/sprites.json')._frameKeys.filter(k => k.startsWith(type));
   }
   const keys = _frameKeys[type];
-  const idx = Math.floor(Math.random() * keys.length);
+  const idx = randInt(keys.length);
   const spr = Sprite.from(keys[idx]);
 
-  spr.tint = Math.floor(Math.random() * 16777215);
-  spr.scale.x = Math.random() < 0.5 ? -1 : 1;
+  spr.tint = randInt(0xFFFFFF);
+  spr.scale.x = randPick(-1, 1);
 
   if (type === 'lamp') {
     return new Lamp(spr, getRandomLampDesc() + "\nRub it!", onClick, hasGenie);
@@ -49,6 +50,7 @@ class Item extends Container {
 
   picked() {
     this.sprite.removeAllListeners();
+    sound.play('audio/pickup.mp3');
     return gsap.timeline()
       .to(this.gf, {outerStrength: 10, distance: 40, duration: 0.1})
       .to(this.gf, {outerStrength: 0, distance: 0, alpha: 0, duration: 0.3});
@@ -58,8 +60,9 @@ class Item extends Container {
 class Lamp extends Item {
   constructor(sprite, desc, onClick, hasGenie) {
     super(sprite, desc, onClick);
-    this.hasGenie = hasGenie;
-    this.durability = 1000 + Math.random() * 1000;
+    this.hasGenie = true;//hasGenie;
+    this.durability = randInt(1000, 2000);
+    this.rubSound = sound.find('audio/squeak.mp3');
   }
 
   allowRubbing(onRubbingSucceded, onRubbingFailed) {
@@ -73,6 +76,7 @@ class Lamp extends Item {
     const onDown = (evt) => {
       isRubbing = true;
       lastPos = evt.getLocalPosition(this);
+      this.rubSound.play({loop: true});
     };
     const onMove = (evt) => {
       if (isRubbing) {
@@ -82,11 +86,13 @@ class Lamp extends Item {
         lastPos = newPos;
 
         const avgSpeed = dist / moves;
+        this.rubSound.speed = avgSpeed;
         
         this.gf.alpha = Math.min(1, 0.4 * avgSpeed)
         this.gf.outerStrength = 2 + dist * 0.01;
 
         if (dist * avgSpeed > this.durability) {
+          this.rubSound.stop();
           isRubbing = false;
           this.sprite.removeAllListeners();
           this.rubbedWell(onRubbingSucceded, onRubbingFailed);
@@ -99,6 +105,7 @@ class Lamp extends Item {
         dist = 0;
         moves = 0;
         lastPos = null;
+        this.rubSound.stop();
         gsap.to(this.gf, {outerStrength: 2, distance: 10, alpha: 0.4, duration: 0.3})
       }
     }
@@ -109,6 +116,7 @@ class Lamp extends Item {
         dist = 0;
         moves = 0;
         lastPos = null;
+        this.rubSound.stop();
       }
     }
     const onOver = (evt) => {
@@ -129,10 +137,12 @@ class Lamp extends Item {
   rubbedWell(onRubbingSucceded, onRubbingFailed) {
     gsap.to(this.gf, {alpha: 0, duration: 0.3})
     if (this.hasGenie) {
+      sound.play("audio/airReleased.mp3");
       onRubbingSucceded();
     } else {
       const df = new GlitchFilter({offset: 20});
       this.filters = [df];
+      sound.play("audio/breakGlass.mp3");
       onRubbingFailed();
     }
   }

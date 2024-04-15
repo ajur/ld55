@@ -1,7 +1,9 @@
+import gsap from "gsap";
 import { Container, Sprite } from "pixi.js";
 import { app } from "../app";
 import { Message } from "./Message";
-import gsap from "gsap";
+import msg from "../msg";
+
 
 
 export const popup = ({text, size = 'big', modal = false, onClick}) => {
@@ -26,6 +28,7 @@ export class Popup extends Container {
 
     this.eventMode = 'static';
     this.on('pointerdown', this.clicked);
+    msg.on('resize', this.resize, this);
   }
 
   createBackground() {
@@ -47,6 +50,11 @@ export class Popup extends Container {
       const bkgScale = Math.max(width / this.bkg.texture.width, height / this.bkg.texture.height);
       this.bkg.scale.set(bkgScale);
     }
+  }
+
+  destroy() {
+    msg.off('resize', this.resize, this);
+    super.destroy();
   }
 
 }

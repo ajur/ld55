@@ -18,6 +18,7 @@
   "dependencies": {
     "@assetpack/plugin-manifest": "^0.8.0",
     "@bitarray/typedarray": "^1.1.1",
+    "@pixi/sound": "^6.0.0",
     "gsap": "^3.12.5",
     "pixi-filters": "^6.0.2",
     "pixi.js": "^8.1.0",

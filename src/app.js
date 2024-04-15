@@ -9,6 +9,5 @@ export async function initApp() {
   const appElem = document.querySelector('#app') ?? document.body;
   appElem.appendChild(app.canvas);
 
-  console.log('app inited', app)
   return app;
 }

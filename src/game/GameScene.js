@@ -1,5 +1,5 @@
-import { Container, Sprite, BlurFilter } from "pixi.js";
-import { shuffle } from "../tools";
+import { Container, Sprite, BlurFilter, Graphics } from "pixi.js";
+import { rand, randInt, shuffle } from "../tools";
 import { createRandomItem } from "./Item";
 import gsap from "gsap";
 import { ItemCloseupScene } from "./ItemCloseupScene";
@@ -45,11 +45,11 @@ export class GameScene extends Container {
   addItem(itemType) {
     const [type, hasGenie] = itemType.split('+');
     const item = createRandomItem(type, !!hasGenie, this.onItemPicked.bind(this));
-    item.x = (Math.random() - 0.5) * this.playArea.width;
-    item.y = (Math.random() - 0.5) * this.playArea.height;
+    item.x = rand(-0.5, 0.5) * this.playArea.width;
+    item.y = rand(-0.5, 0.5) * this.playArea.height;
 
-    const fromY = 200 + Math.random() * 100;
-    const duration = 0.8 + Math.random() * 0.2;
+    const fromY = randInt(200, 300);
+    const duration = rand(0.8, 1.0);
     gsap.from(item, {y: fromY, ease: 'back.out(2)', duration});
 
     this.items.addChild(item);
@@ -75,6 +75,21 @@ export class GameScene extends Container {
 
     const bkgScale = Math.max(width / this.bkg.texture.width, height / this.bkg.texture.height);
     this.bkg.scale.set(bkgScale);
+
+
+    if (Math.sign(width - height) != Math.sign(this.playArea.width - this.playArea.height)) {
+      const halfOldWidth = this.playArea.width / 2;
+      const halfOldHeight = this.playArea.height / 2;
+      this.playArea = {
+        width: this.playArea.height,
+        height: this.playArea.width
+      };
+      
+      this.items.children.forEach(item => {
+        item.x = item.x * 0.5 * (this.playArea.width / halfOldWidth);
+        item.y = item.y * 0.5 * (this.playArea.height / halfOldHeight);
+      });
+    }
   }
   
 }
