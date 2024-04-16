@@ -60,7 +60,7 @@ class Item extends Container {
 class Lamp extends Item {
   constructor(sprite, desc, onClick, hasGenie) {
     super(sprite, desc, onClick);
-    this.hasGenie = true;//hasGenie;
+    this.hasGenie = hasGenie;
     this.durability = randInt(1000, 2000);
     this.rubSound = sound.find('audio/squeak.mp3');
   }
